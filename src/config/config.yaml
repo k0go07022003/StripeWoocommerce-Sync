@@ -1,0 +1,4 @@
+sqlalchemy:
+  secret_key: "Controlbyte#baza"
+  database_url: "sqlite:///database.db"
+
