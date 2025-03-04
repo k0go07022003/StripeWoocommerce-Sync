@@ -88,7 +88,7 @@ class WooCommerceHandler:
 
             logger.info(f"Pobrano line items ze Stripe: {line_items}")
 
-            woo_line_items = self.prepare_line_items(line_items)
+            woo_line_items = self.prepare_line_items(line_items, stripe_session["currency_conversion"])
             logger.info(f"Przygotowane line items dla WooCommerce: {woo_line_items}")
 
             order_data = {
@@ -133,18 +133,26 @@ class WooCommerceHandler:
             response = self.wcapi.post("customers", customer_data)
             return response.json()
 
-    def prepare_line_items(self, stripe_line_items):
+    def prepare_line_items(self, stripe_line_items, currency_conversion):
         woo_line_items = []
+        converted_amount_total = currency_conversion['amount_total'] / 100  # Konwersja do jednostek waluty
+        converted_currency = currency_conversion['source_currency']  # Waluta bazowa
+    
         for item in stripe_line_items:
             product = Product.query.filter_by(stripe_id=item['price']['product']).first()
+    
             if product:
                 woo_product_ids = product.get_woo_product_ids()
+                price_per_product = converted_amount_total / len(woo_product_ids)
+    
                 for woo_product_id in woo_product_ids:
                     woo_line_items.append({
                         "product_id": woo_product_id,
                         "quantity": item['quantity'],
-                        "total": str(item['amount_total'] / 100 / len(woo_product_ids))
+                        "total": str(price_per_product),
+                        "currency": converted_currency  # Przekazanie waluty płatności
                     })
             else:
                 logger.error(f"Nie znaleziono mapowania dla produktu Stripe: {item['price']['product']}")
+    
         return woo_line_items

@@ -16,7 +16,7 @@ class StripeHandler:
 
     def process_checkout_session(self, session):
         logger.info(f"Przetwarzanie sesji checkout: {session['id']}")
-        line_items = self.stripe.checkout.Session.list_line_items(session['id'], limit=5)
+        line_items = self.stripe.checkout.Session.list_line_items(session['id'], limit=8)
         logger.info(f"Pobrano {len(line_items.data)} line items")
         return line_items.data
     

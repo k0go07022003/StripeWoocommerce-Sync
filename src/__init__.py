@@ -8,6 +8,7 @@ import logging
 from .extensions import db, login_manager
 import yaml
 
+
 # Inicjalizacja obiektów
 
 
@@ -95,8 +96,41 @@ def create_app():
                 new_order = woocommerce_handler.create_order(session, line_items)
                 logger.info(f"Przetworzono zamówienie: {new_order['id']}")
                 return jsonify(success=True), 200
+            
             except Exception as e:
-                logger.error(f"Błąd podczas przetwarzania zamówienia: {str(e)}", exc_info=True)
+                logger.error(f"Błąd podczas przetwarzania zamówienia: {str(e)}", exc_info=True)     
+                        
+                # Wysyłanie maila z informacją o błędzie
+                try:
+                    import smtplib
+                    from email.mime.text import MIMEText
+                    from email.mime.multipart import MIMEMultipart
+                    
+                    smtp_server = 'smtp.webio.pl'
+                    smtp_port = 587
+                    smtp_username = 'szymon@adamekk.pl'
+                    smtp_password = 'Admino2003!'
+                    
+                    subject = "Błąd podczas przetwarzania zamówienia - CB.TECH"
+                    body = f"Wystąpił błąd podczas przetwarzania zamówienia: {str(e)}"
+                    sender_email = 'szymon@adamekk.pl'
+                    receiver_email = 'kontakt@controlbyte.pl'
+                    
+                    message = MIMEMultipart()
+                    message['From'] = sender_email
+                    message['To'] = receiver_email
+                    message['Subject'] = subject
+                    message.attach(MIMEText(body, 'plain'))
+                    
+                    with smtplib.SMTP(smtp_server, smtp_port) as server:
+                        server.starttls()
+                        server.login(smtp_username, smtp_password)
+                        server.send_message(message)
+
+                    logger.info("Wysłano powiadomienie e-mail o błędzie")
+                except Exception as mail_error:
+                    logger.error(f"Nie udało się wysłać maila z błędem: {str(mail_error)}")
+                
                 return jsonify({'error': 'Nie udało się przetworzyć zamówienia'}), 500
         else:
             logger.info(f"Otrzymano event innego typu niż checkout.session.completed: {event['type']}")

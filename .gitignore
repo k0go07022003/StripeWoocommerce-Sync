@@ -1,0 +1,58 @@
+# Pliki i katalogi generowane przez Pythona
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pliki kompilowane
+*.so
+
+# Foldery budowy i dystrybucji
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Wirtualne środowiska
+venv/
+ENV/
+env/
+.venv/
+
+# Konfiguracje narzędzi
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testy, raporty pokrycia i cache
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+.pytest_cache/
+
+# Pliki logów
+*.log
+
+# Pliki środowiskowe (np. zawierające klucze API)
+.env
+.env.*
+
+# Pliki konfiguracji IDE
+.idea/
+.vscode/
+
+# Inne pliki systemowe
+.DS_Store
+Thumbs.db
+
+# Pliki konfiguracyjne (podejrzane o zawartość wrażliwych danych)
+
+instance/database.db
+src/config/config.yaml
